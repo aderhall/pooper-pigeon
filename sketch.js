@@ -1,9 +1,9 @@
 function setup() {
   createCanvas(1420, 760);
-  cloud = loadImage('assets/clouds-6.png');
+  cloud = loadImage('https://aderhall.github.io/pooper-pigeon/assets/clouds-6.png');
   clouds = [];
-  for (var c = 0; c < 20; c ++) {
-    clouds.push([random(-1000, 1000), random(-1000, 500)]);
+  for (var c = 0; c < 50; c ++) {
+    clouds.push([random(-2840, 2840), random(-1000, 500)]);
   }
 }
 
@@ -24,7 +24,7 @@ Bird.prototype.display = function() {
   this.y += this.velocity[1];
   this.velocity[0] *= 0.94;
   this.velocity[1] *= 0.99;
-  if (this.x < 50) {
+  /*if (this.x < 50) {
     this.x = 50;
     this.velocity[0] *= -1;
   }
@@ -36,9 +36,9 @@ Bird.prototype.display = function() {
     this.y = 50;
     this.velocity[1] *= -1;
   }
-  if (this.y > 710) {
-    this.y = 710;
-    this.velocity[1] *= -1;
+  */if (this.y > 700) {
+    this.y = 700;
+    this.velocity[1] *= -0.1;
   }
   if (this.right) {
     xdir = 10;
@@ -46,6 +46,7 @@ Bird.prototype.display = function() {
     xdir = 170;
   }
   push();
+  translate(710, 380);
   rotate(radians(-this.direction*xdir));
   fill(0);
   triangle(0, 0, 0, 20, 40, 10);
@@ -91,15 +92,26 @@ function codeDown(code) {
 }
 
 function draw() {
-  background(100);
+  background(100, 150, 255);
   pigeon.display();
 
-  push();
-  translate(-pigeon.x, -pigeon.y);
-  for (var c = 0; c < clouds.length; c++) {
-    image(cloud, clouds[c][0], clouds[c][1])
-  }
 
+
+  for (var c = 0; c < clouds.length; c++) {
+    push();
+    offset = clouds[c][0]-pigeon.x;
+    while (offset < -1420) {
+      offset += 2840;
+    }
+    translate(offset, -pigeon.y);
+    image(cloud, 0, clouds[c][1])
+    pop();
+  }
+  fill(100);
+  push();
+  translate(0, -pigeon.y);
+  rect(-3000, 1100, 6000, 300);
+  pop();
   if (codeDown(38)) {
     pigeon.direction = 1;
   }
