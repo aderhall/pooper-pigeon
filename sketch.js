@@ -1,0 +1,117 @@
+function setup() {
+  createCanvas(1420, 760);
+  cloud = loadImage('assets/clouds-6.png');
+  clouds = [];
+  for (var c = 0; c < 20; c ++) {
+    clouds.push([random(-1000, 1000), random(-1000, 500)]);
+  }
+}
+
+
+
+
+function Bird(x, y) {
+  this.x = x;
+  this.y = y;
+  this.velocity = [0, 0];
+  this.direction = 0;
+  this.right = true;
+}
+Bird.prototype.display = function() {
+  this.velocity[1] += 0.3;
+  this.velocity[1] -= this.direction*Math.abs(this.velocity[0])/30;
+  this.x += this.velocity[0];
+  this.y += this.velocity[1];
+  this.velocity[0] *= 0.94;
+  this.velocity[1] *= 0.99;
+  if (this.x < 50) {
+    this.x = 50;
+    this.velocity[0] *= -1;
+  }
+  if (this.x > 1370) {
+    this.x = 1370;
+    this.velocity[0] *= -1;
+  }
+  if (this.y < 50) {
+    this.y = 50;
+    this.velocity[1] *= -1;
+  }
+  if (this.y > 710) {
+    this.y = 710;
+    this.velocity[1] *= -1;
+  }
+  if (this.right) {
+    xdir = 10;
+  } else {
+    xdir = 170;
+  }
+  push();
+  rotate(radians(-this.direction*xdir));
+  fill(0);
+  triangle(0, 0, 0, 20, 40, 10);
+  pop();
+}
+
+pigeon = new Bird(100, 100);
+
+
+
+keysDown = []
+keyCodesDown = []
+
+function keyPressed() {
+  keysDown.push(key);
+  keyCodesDown.push(keyCode);
+}
+function keyReleased() {
+  for (var k = 0; k < keysDown.length; k ++) {
+    if (keysDown[k] == key) {
+      keysDown.splice(k, 1);
+    }
+  }
+  for (var k = 0; k < keyCodesDown.length; k ++) {
+    if (keyCodesDown[k] == keyCode) {
+      keyCodesDown.splice(k, 1);
+    }
+  }
+}
+function keyDown(k) {
+  if (keysDown.indexOf(k) !== -1) {
+    return true;
+  } else {
+    return false;
+  }
+}
+function codeDown(code) {
+  if (keyCodesDown.indexOf(code) !== -1) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function draw() {
+  background(100);
+  pigeon.display();
+
+  push();
+  translate(-pigeon.x, -pigeon.y);
+  for (var c = 0; c < clouds.length; c++) {
+    image(cloud, clouds[c][0], clouds[c][1])
+  }
+
+  if (codeDown(38)) {
+    pigeon.direction = 1;
+  }
+  if (codeDown(40)) {
+    pigeon.direction = -1;
+  }
+  if (codeDown(37)) {
+    pigeon.velocity[0] -= 1;
+    pigeon.right = false;
+  }
+  if (codeDown(39)) {
+    pigeon.velocity[0] += 1;
+    pigeon.right = true;
+  }
+}
