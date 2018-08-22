@@ -3,11 +3,11 @@ function setup() {
   cloud = loadImage('https://aderhall.github.io/pooper-pigeon/assets/clouds-6.png');
   clouds = [];
   for (var c = 0; c < 50; c ++) {
-    clouds.push([random(-2840, 2840), random(-2000, 500)]);
+    clouds.push([random(-2840, 2840), random(-1000, 500)]);
   }
 }
 
-flames = [];
+
 
 
 function Bird(x, y) {
@@ -16,14 +16,10 @@ function Bird(x, y) {
   this.velocity = [0, 0];
   this.direction = 0;
   this.right = true;
-  this.orientation = 0;
-  this.flame = false;
-  this.flameCycle = 0;
 }
 Bird.prototype.display = function() {
   this.velocity[1] += 0.3;
-  this.velocity[1] += sin(radians(this.orientation))*Math.abs(this.velocity[0])/13;
-  //this.velocity[0] += cos(radians(this.orientation));
+  this.velocity[1] -= this.direction*Math.abs(this.velocity[0])/30;
   this.x += this.velocity[0];
   this.y += this.velocity[1];
   this.velocity[0] *= 0.94;
@@ -51,18 +47,11 @@ Bird.prototype.display = function() {
   }
   push();
   translate(710, 380);
-  rotate(radians(this.orientation));
+  rotate(radians(-this.direction*xdir));
   fill(255);
   triangle(0, 0, 0, 20, 40, 10);
   strokeWeight(2);
   line(40, 10, 0, 10);
-  fill(255, 0, 0);
-  noStroke();
-  if (this.flame) {
-    this.flameCycle +=3;
-    this.flameCycle %= 10;
-    ellipse(-10-this.flameCycle, 10, 10+this.flameCycle, 10);
-  }
   pop();
 }
 
@@ -105,25 +94,10 @@ function codeDown(code) {
 }
 
 function draw() {
-  background(100 + pigeon.y*255/3200, 150 + pigeon.y*255/3200, 220 + pigeon.y*255/3200);
+  background(100, 150, 255);
   pigeon.display();
-  text(pigeon.y, 100, 100);
-  del = [];
-  for (var c = 0; c < flames.length; c++) {
-    push();
-    translate(-pigeon.x, -pigeon.y);
-    fill(255, 255, 255, flames[c][2]);
-    noStroke();
-    ellipse(flames[c][0], flames[c][1], 30, 60);
-    flames[c][2] -= 3;
-    if (flames[c][2] < 0) {
-      del.push(c);
-    }
-    pop();
-  }
-  for (var c = 0; c < del.length; c++) {
-    flames.splice(c, 1);
-  }
+
+
 
   for (var c = 0; c < clouds.length; c++) {
     push();
@@ -138,7 +112,6 @@ function draw() {
     image(cloud, 0, clouds[c][1])
     pop();
   }
-
   fill(100);
   push();
   translate(0, -pigeon.y);
@@ -151,17 +124,11 @@ function draw() {
     pigeon.direction = -1;
   }
   if (codeDown(37)) {
-    pigeon.orientation --;
+    pigeon.velocity[0] -= 1;
+    pigeon.right = false;
   }
   if (codeDown(39)) {
-    pigeon.orientation ++;
-  }
-  if (codeDown(32)) {
-    pigeon.velocity[0] += cos(radians(pigeon.orientation));
-    pigeon.velocity[1] += sin(radians(pigeon.orientation));
-    flames.push([pigeon.x+720, pigeon.y+380, 100]);
-    pigeon.flame = true;
-  } else {
-    pigeon.flame = false;
+    pigeon.velocity[0] += 1;
+    pigeon.right = true;
   }
 }
